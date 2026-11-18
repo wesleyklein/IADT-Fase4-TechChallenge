@@ -1,0 +1,11 @@
+.venv/
+__pycache__/
+.env
+.env.*
+!.env.example
+data/generated/
+
+data/*.sqlite3*
+data/sessions/
+models/*.task
+models/*.download

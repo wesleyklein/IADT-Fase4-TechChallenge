@@ -1,0 +1,250 @@
+<!doctype html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Monitoramento multimodal · IADT</title>
+    <link rel="stylesheet" href="/static/style.css" />
+    <script src="/static/app.js" defer></script>
+  </head>
+  <body>
+    <aside class="sidebar">
+      <a class="brand" href="/" aria-label="Página inicial">m<span>+</span></a>
+      <div class="brand-name">Monitoramento<br />multimodal</div>
+      <nav aria-label="Área de trabalho">
+        <button class="nav active" data-view="capture">
+          Gravar e analisar <span>↗</span>
+        </button>
+        <button class="nav" data-view="demo">
+          Cenários de exemplo <span>→</span>
+        </button>
+      </nav>
+      <div class="sidebar-foot">
+        FIAP · IADT<br />Tech Challenge · Fase 4<br /><span
+          >Protótipo acadêmico</span
+        >
+      </div>
+    </aside>
+    <main>
+      <header>
+        <span>PAINEL DE ACOMPANHAMENTO</span
+        ><span class="connection" id="health">Verificando serviços…</span>
+      </header>
+      <div class="page-heading">
+        <div>
+          <h1 id="page-title">Gravação<br /><em>e análise.</em></h1>
+          <p id="page-subtitle">
+            Grave um exercício e uma fala para examinar as evidências.
+          </p>
+        </div>
+        <button class="secondary" id="new-session">
+          Nova sessão <span>＋</span>
+        </button>
+      </div>
+      <div class="session-strip">
+        <span id="patient">Preparando sessão…</span
+        ><span id="session-mode">Gravação local</span>
+      </div>
+      <div id="notice" role="status" aria-live="polite" hidden></div>
+
+      <section id="capture-view">
+        <div class="capture-grid">
+          <article class="card">
+            <div class="card-heading">
+              <div>
+                <span class="eyebrow">MOVIMENTO</span>
+                <h2>Exercício em vídeo</h2>
+              </div>
+              <span class="format">Até 60 s</span>
+            </div>
+            <p class="instructions">
+              Enquadre o corpo de frente. Eleve lateralmente o braço escolhido e
+              abaixe em 4 segundos. Repita 3 vezes, dentro do seu conforto.
+            </p>
+            <div class="video-stage">
+              <video id="video-preview" playsinline controls hidden></video>
+              <div id="video-placeholder" class="placeholder">
+                <span class="camera-glyph">◉</span
+                ><span>Sua câmera aparece aqui</span>
+              </div>
+              <span
+                class="record-status"
+                id="video-record-status"
+                hidden
+              ></span>
+            </div>
+            <div class="settings">
+              <label
+                >Braço
+                <select id="side">
+                  <option value="right">Direito da pessoa</option>
+                  <option value="left">Esquerdo da pessoa</option>
+                </select></label
+              >
+            </div>
+            <div class="actions">
+              <button class="primary" id="video-record">Ativar câmera</button>
+              <button class="secondary close-camera" id="close-camera" hidden>
+                Fechar câmera
+              </button>
+              <label class="upload"
+                >Enviar vídeo<input
+                  id="video-file"
+                  type="file"
+                  accept="video/*"
+              /></label>
+              <button class="analyze" id="video-analyze" disabled>
+                Analisar →
+              </button>
+            </div>
+            <p class="file-label" id="video-file-label">Câmera desligada</p>
+          </article>
+          <article class="card">
+            <div class="card-heading">
+              <div>
+                <span class="eyebrow">VOZ E LINGUAGEM</span>
+                <h2>Relato em áudio</h2>
+              </div>
+              <span class="format">Até 60 s</span>
+            </div>
+            <p class="instructions">
+              Conte como você se sentiu durante o exercício. Grave em um
+              ambiente silencioso e fale no seu ritmo habitual.
+            </p>
+            <div class="audio-stage">
+              <canvas
+                id="waveform"
+                width="600"
+                height="170"
+                aria-label="Visualização do áudio"
+              ></canvas>
+              <span id="audio-record-status">Microfone desligado</span>
+              <audio id="audio-preview" controls hidden></audio>
+            </div>
+            <div class="settings">
+              <label
+                >Idioma
+                <select id="locale">
+                  <option value="pt-BR">Português brasileiro</option>
+                  <option value="pt-PT">Português europeu</option>
+                </select></label
+              >
+            </div>
+            <div class="actions">
+              <button class="primary" id="audio-record">
+                Ativar microfone e gravar
+              </button>
+              <label class="upload"
+                >Enviar áudio<input
+                  id="audio-file"
+                  type="file"
+                  accept="audio/*,video/webm"
+              /></label>
+              <button class="analyze" id="audio-analyze" disabled>
+                Analisar →
+              </button>
+            </div>
+            <p class="file-label" id="audio-file-label">
+              O áudio será enviado ao Azure ao analisar.
+            </p>
+          </article>
+        </div>
+        <div id="capture-results" class="results-grid">
+          <article class="card">
+            <div class="card-heading">
+              <h2>Leitura do movimento</h2>
+              <span class="eyebrow">POSE</span>
+            </div>
+            <div id="video-result" class="empty">
+              Analise um vídeo para visualizar os ângulos e os intervalos
+              detectados.
+            </div>
+          </article>
+          <article class="card">
+            <div class="card-heading">
+              <h2>Leitura da fala</h2>
+              <span class="eyebrow">AZURE</span>
+            </div>
+            <div id="audio-result" class="empty">
+              A transcrição, os indicadores acústicos e os termos aparecem aqui.
+            </div>
+          </article>
+        </div>
+      </section>
+
+      <section id="demo-view" hidden>
+        <article class="card demo-controls">
+          <div>
+            <span class="eyebrow">ACOMPANHAMENTO SIMULADO</span>
+            <h2>Do evento ao alerta</h2>
+            <p>
+              Reproduza os relatórios já analisados com sinais vitais e
+              prescrições sintéticos.
+            </p>
+          </div>
+          <div class="demo-select">
+            <label
+              >Cenário<select id="scenario">
+                <option value="anomalo">Com desvios</option>
+                <option value="normal">Normal</option>
+              </select></label
+            ><button class="primary" id="demo-start">
+              Reproduzir cenário →
+            </button>
+          </div>
+        </article>
+        <div class="vitals">
+          <article class="card">
+            <span class="eyebrow">FREQUÊNCIA CARDÍACA</span>
+            <div class="metric"><strong id="hr">—</strong><span>bpm</span></div>
+            <canvas id="hr-chart" height="90"></canvas>
+          </article>
+          <article class="card">
+            <span class="eyebrow">SATURAÇÃO</span>
+            <div class="metric"><strong id="spo2">—</strong><span>%</span></div>
+            <canvas id="spo2-chart" height="90"></canvas>
+          </article>
+          <article class="card">
+            <span class="eyebrow">PRESSÃO ARTERIAL</span>
+            <div class="metric">
+              <strong id="bp">—</strong><span>mmHg</span>
+            </div>
+            <p id="demo-progress">Aguardando reprodução</p>
+          </article>
+        </div>
+        <div class="results-grid">
+          <article class="card">
+            <h2>Eventos recebidos</h2>
+            <ol id="timeline" class="timeline"></ol>
+          </article>
+          <article class="card">
+            <h2>Evidências multimodais</h2>
+            <div id="demo-result" class="empty">
+              Os resultados são exibidos ao concluir o fluxo.
+            </div>
+          </article>
+        </div>
+      </section>
+
+      <section class="card alert-section">
+        <div class="card-heading">
+          <div>
+            <span class="eyebrow">EQUIPE SIMULADA</span>
+            <h2>Central de alertas <span id="alert-count">0</span></h2>
+          </div>
+          <label class="actor"
+            >Recebido por<input
+              id="actor"
+              placeholder="Nome da pessoa responsável"
+              maxlength="100"
+          /></label>
+        </div>
+        <div id="alerts" class="empty">Nenhum alerta nesta sessão.</div>
+      </section>
+      <footer>
+        Os limiares são demonstrativos. Resultados para revisão no contexto
+        deste protótipo acadêmico.
+      </footer>
+    </main>
+  </body>
+</html>
